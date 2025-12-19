@@ -1,0 +1,112 @@
+<div class="group-detail-container">
+  <header class="page-header">
+    <div class="header-content">
+      <button class="back-button" (click)="goBack()">← Back</button>
+      <h1>Group Details</h1>
+    </div>
+  </header>
+
+  @if (successMessage || errorMessage) {
+    <div class="message-container">
+      @if (successMessage) {
+        <div class="alert alert-success">✓ {{ successMessage }}</div>
+      }
+      @if (errorMessage) {
+        <div class="alert alert-error">✗ {{ errorMessage }}</div>
+      }
+    </div>
+  }
+
+  <main class="page-main">
+    @if (isLoading) {
+      <div class="loading">Loading...</div>
+    } @else if (group) {
+      <div class="group-header">
+        <h1>{{ group.name }}</h1>
+        @if (group.hobby) {
+          <span class="hobby-badge">{{ group.hobby.name }}</span>
+        }
+        @if (group.location) {
+          <p class="location">📍 {{ group.location }}</p>
+        }
+        <p class="description">{{ group.description || 'Join this group to connect with others' }}</p>
+        @if (group.users && group.users.length > 0) {
+          <span class="members-count">{{ group.users.length }} members</span>
+        }
+        <div class="group-actions">
+          @if (isMember) {
+            <button class="btn btn-primary" (click)="navigateToChat()">Chat</button>
+            <button class="btn btn-danger" (click)="quitGroup()" [disabled]="isQuitting">
+              {{ isQuitting ? 'Leaving...' : 'Leave Group' }}
+            </button>
+          } @else {
+            <button class="btn btn-secondary" (click)="joinGroup()" [disabled]="isJoining">
+              {{ isJoining ? 'Joining...' : 'Join Group' }}
+            </button>
+          }
+        </div>
+      </div>
+
+      <section class="members-section">
+        <div class="section-header">
+          <h2>Group Members ({{ getMembersCount() }})</h2>
+          <button class="back-button" (click)="goBack()">← Back</button>
+        </div>
+        @if (getDisplayMembers().length > 0) {
+          <div class="members-list">
+            @for (member of getDisplayMembers(); track member.id) {
+              <div class="member-card">
+                <div class="member-info">
+                  <h4>{{ member.name }}</h4>
+                  <p class="member-email">{{ member.email }}</p>
+                  @if (member.bio) {
+                    <p class="member-bio">{{ member.bio }}</p>
+                  }
+                </div>
+                <div class="member-actions">
+                  @if (isFriend(member.id)) {
+                    <span class="badge-friend">Friend</span>
+                  } @else {
+                    <button class="btn btn-sm btn-secondary" (click)="addFriend(member)">
+                      Add Friend
+                    </button>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="no-members">Only you are in this group right now.</p>
+        }
+      </section>
+
+      <section class="events-section">
+        <div class="section-header">
+          <h2>Group Events</h2>
+          <button class="back-button" (click)="goBack()">← Back</button>
+        </div>
+        @if (events.length > 0) {
+          <div class="events-list">
+            @for (event of events; track event.id) {
+              <div class="event-card" (click)="navigateToEvent(event.id!)">
+                <div class="event-date">
+                  <span class="date-day">{{ event.date | date:'d' }}</span>
+                  <span class="date-month">{{ event.date | date:'MMM' }}</span>
+                </div>
+                <div class="event-info">
+                  <h3>{{ event.title }}</h3>
+                  <p>{{ event.description || 'Join us for this event' }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="no-events">No events scheduled for this group yet.</p>
+        }
+      </section>
+    } @else {
+      <div class="error">Group not found</div>
+    }
+  </main>
+</div>
+

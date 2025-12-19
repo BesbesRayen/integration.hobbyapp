@@ -1,0 +1,40 @@
+<div class="hobbies-list-container">
+  <header class="page-header">
+    <div class="header-content">
+      <h1>All Hobbies</h1>
+      <a routerLink="/home" class="back-link">← Back to Home</a>
+    </div>
+  </header>
+
+  @if (errorMessage) {
+    <div class="alert alert-error">{{ errorMessage }}</div>
+  }
+  @if (successMessage) {
+    <div class="alert alert-success">{{ successMessage }}</div>
+  }
+
+  <main class="page-main">
+    @if (isLoading) {
+      <div class="loading">Loading hobbies...</div>
+    } @else {
+      <div class="hobbies-grid">
+        @for (hobby of hobbies; track hobby.id) {
+          <div class="hobby-card">
+            <div class="hobby-icon">{{ hobby.name.charAt(0) }}</div>
+            <h3>{{ hobby.name }}</h3>
+            <p>{{ hobby.description || 'Join this hobby community' }}</p>
+            @if (hobby.groups && hobby.groups.length > 0) {
+              <span class="groups-count">{{ hobby.groups.length }} groups</span>
+            }
+            <div class="hobby-actions">
+              <button class="btn btn-primary" (click)="navigateToHobby(hobby.id!)" style="flex: 1;">View</button>
+            </div>
+          </div>
+        }
+        @if (hobbies.length === 0) {
+          <p class="no-hobbies">No hobbies available yet.</p>
+        }
+      </div>
+    }
+  </main>
+</div>

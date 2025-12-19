@@ -1,0 +1,87 @@
+<div class="messages-container">
+  @if (otherUser) {
+    <!-- Conversation View -->
+    <div class="conversation-view">
+      <div class="messages-header">
+        <button class="btn-back" (click)="goBackToFriends()">← Retour</button>
+        <div class="header-info">
+          <h2>{{ otherUser.name }}</h2>
+          <span class="user-status">{{ otherUser.email }}</span>
+        </div>
+      </div>
+
+      @if (isLoading) {
+        <div class="loading">
+          <p>Chargement de la conversation...</p>
+        </div>
+      } @else {
+        <div class="messages-list">
+          @if (messages.length === 0) {
+            <div class="no-messages-center">
+              <p>Commencez la conversation!</p>
+            </div>
+          } @else {
+            @for (message of messages; track message.id) {
+              <div class="message-group" [ngClass]="{ 'sent': message.senderId === currentUser?.id, 'received': message.senderId !== currentUser?.id }">
+                <div class="message" [ngClass]="{ 'own-message': message.senderId === currentUser?.id }">
+                  <div class="message-content">
+                    <p>{{ message.content }}</p>
+                  </div>
+                  <span class="message-time">{{ message.createdAt | date: 'short' }}</span>
+                </div>
+              </div>
+            }
+          }
+        </div>
+
+        <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="message-form">
+          <input 
+            type="text"
+            formControlName="content"
+            placeholder="Aa"
+            class="message-input"
+          />
+          <button 
+            type="submit" 
+            class="btn-send"
+            [disabled]="messageForm.invalid || isSending"
+          >
+            ➤
+          </button>
+        </form>
+      }
+    </div>
+  } @else {
+    <!-- Inbox View -->
+    <div class="inbox-view">
+      <h1>Mes Messages</h1>
+      @if (isLoading) {
+        <div class="loading">
+          <p>Chargement des messages...</p>
+        </div>
+      } @else if (messages.length === 0) {
+        <div class="no-messages">
+          <p>Vous n'avez pas de messages.</p>
+          <button class="btn btn-primary" (click)="goBackToFriends()">
+            Voir mes amis
+          </button>
+        </div>
+      } @else {
+        <div class="messages-list-view">
+          @for (message of messages; track message.id) {
+            <div class="message-item" (click)="openConversation(message.senderId)">
+              <div class="message-item-header">
+                <h3>{{ message.senderName || 'Unknown' }}</h3>
+                <span class="message-time">{{ message.createdAt | date: 'short' }}</span>
+              </div>
+              <p class="message-preview">{{ message.content | slice: 0: 50 }}...</p>
+              @if (!message.read) {
+                <span class="unread-badge">Non lu</span>
+              }
+            </div>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

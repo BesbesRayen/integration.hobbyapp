@@ -1,0 +1,50 @@
+<div class="friends-container">
+  <header class="page-header">
+    <div class="header-content">
+      <button class="back-button" (click)="goBack()">← Back</button>
+      <h1>My Friends</h1>
+    </div>
+  </header>
+
+  <div class="friends-header">
+    <span class="friends-count">{{ friends.length }} friend(s)</span>
+  </div>
+
+  @if (isLoading) {
+    <div class="loading">
+      <p>Chargement des amis...</p>
+    </div>
+  } @else if (friends.length === 0) {
+    <div class="no-friends">
+      <p>Vous n'avez pas encore d'amis.</p>
+      <p>Commencez à explorer les hobbies et les groupes pour trouver des amis!</p>
+    </div>
+  } @else {
+    <div class="friends-grid">
+      @for (friend of friends; track friend.id) {
+        <div class="friend-card">
+          <div class="friend-info">
+            <h3>{{ friend.name }}</h3>
+            <p class="friend-email">{{ friend.email }}</p>
+            @if (friend.bio) {
+              <p class="friend-bio">{{ friend.bio }}</p>
+            }
+            @if (friend.phone) {
+              <p class="friend-phone">📞 {{ friend.phone }}</p>
+            }
+          </div>
+          <div class="friend-actions">
+            <button class="btn btn-secondary" (click)="sendMessage(friend.id!)">
+              💬 Message
+            </button>
+            <button class="btn btn-danger" 
+                    (click)="removeFriend($event, friend.id!)"
+                    [disabled]="removingFriendId === friend.id">
+              {{ removingFriendId === friend.id ? 'Suppression...' : '❌ Retirer' }}
+            </button>
+          </div>
+        </div>
+      }
+    </div>
+  }
+</div>

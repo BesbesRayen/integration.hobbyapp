@@ -1,0 +1,174 @@
+<div class="profile-container">
+  <header class="page-header">
+    <div class="header-content">
+      <h1>My Profile</h1>
+      <a routerLink="/home" class="back-link">← Back to Home</a>
+    </div>
+  </header>
+
+  <main class="page-main">
+    @if (isLoading) {
+      <div class="loading">Loading profile...</div>
+    } @else {
+      <div class="profile-card">
+        <div class="profile-header">
+          <div class="profile-avatar">
+            {{ currentUser?.name?.charAt(0)?.toUpperCase() || 'U' }}
+          </div>
+          <h2>{{ currentUser?.name || 'User' }}</h2>
+          @if (currentUser?.verified) {
+            <span class="verified-badge">✓ Verified</span>
+          }
+        </div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()" class="profile-form">
+          <div class="form-group">
+            <label for="name">Full Name</label>
+            <input
+              type="text"
+              id="name"
+              formControlName="name"
+              [class.error]="profileForm.get('name')?.invalid && profileForm.get('name')?.touched"
+            />
+            @if (profileForm.get('name')?.invalid && profileForm.get('name')?.touched) {
+              <span class="error-message">Name must be at least 3 characters</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              formControlName="email"
+              [class.error]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched"
+            />
+            @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
+              <span class="error-message">Please enter a valid email</span>
+            }
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone</label>
+            <input
+              type="tel"
+              id="phone"
+              formControlName="phone"
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="bio">Bio</label>
+            <textarea
+              id="bio"
+              formControlName="bio"
+              rows="4"
+              placeholder="Tell us about yourself..."
+            ></textarea>
+          </div>
+
+          @if (successMessage) {
+            <div class="alert alert-success">{{ successMessage }}</div>
+          }
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid || isSaving">
+              @if (isSaving) {
+                <span>Saving...</span>
+              } @else {
+                <span>Save Changes</span>
+              }
+            </button>
+            <button type="button" class="btn btn-secondary" (click)="logout()">
+              Logout
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- Pending Friend Requests Section -->
+      <section class="profile-section friend-requests-section">
+        <h3>🔔 Friend Requests ({{ pendingRequests.length }})</h3>
+        @if (pendingRequests.length > 0) {
+          <div class="requests-list">
+            @for (request of pendingRequests; track request.id) {
+              <div class="request-item">
+                <div class="request-sender">
+                  <div class="avatar">{{ request.sender.name.charAt(0).toUpperCase() }}</div>
+                  <div class="info">
+                    <h5>{{ request.sender.name }}</h5>
+                    <p class="email">{{ request.sender.email }}</p>
+                  </div>
+                </div>
+                <div class="request-actions">
+                  <button class="btn btn-sm btn-primary" (click)="acceptFriendRequest(request.id)">
+                    Accept
+                  </button>
+                  <button class="btn btn-sm btn-secondary" (click)="rejectFriendRequest(request.id)">
+                    Decline
+                  </button>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="no-data">No pending friend requests</p>
+        }
+      </section>
+
+      <!-- Hobbies Section -->
+      <section class="profile-section">
+        <h3>My Hobbies ({{ userHobbies.length }})</h3>
+        @if (userHobbies.length > 0) {
+          <div class="hobby-list">
+            @for (hobby of userHobbies; track hobby.id) {
+              <div class="hobby-item" (click)="navigateToHobby(hobby.id!)">
+                <span class="hobby-name">{{ hobby.name }}</span>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="no-data">No hobbies joined yet. <a routerLink="/hobbies">Browse hobbies</a></p>
+        }
+      </section>
+
+      <!-- Groups Section -->
+      <section class="profile-section">
+        <h3>My Groups ({{ userGroups.length }})</h3>
+        @if (userGroups.length > 0) {
+          <div class="groups-list">
+            @for (group of userGroups; track group.id) {
+              <div class="group-item" (click)="navigateToGroup(group.id!)">
+                <h4>{{ group.name }}</h4>
+                <p class="group-location">📍 {{ group.location }}</p>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="no-data">No groups joined yet. <a routerLink="/hobbies">Join a hobby first</a></p>
+        }
+      </section>
+
+      <!-- Friends Section -->
+      <section class="profile-section">
+        <h3>Friends ({{ userFriends.length }})</h3>
+        @if (userFriends.length > 0) {
+          <div class="friends-list">
+            @for (friend of userFriends; track friend.id) {
+              <div class="friend-item" (click)="navigateToFriend(friend.id!)">
+                <div class="friend-avatar">{{ friend.name.charAt(0).toUpperCase() || 'U' }}</div>
+                <div class="friend-info">
+                  <h4>{{ friend.name }}</h4>
+                  <p class="friend-email">{{ friend.email }}</p>
+                </div>
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="no-data">No friends yet. Add friends from group members!</p>
+        }
+      </section>
+    }
+  </main>
+</div>
+

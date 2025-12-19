@@ -1,0 +1,76 @@
+<div class="home-container">
+  <header class="home-header">
+    <div class="header-content">
+      <h1>Hobby App</h1>
+      <nav class="nav-menu">
+        <a routerLink="/home" class="nav-link active">Home</a>
+        <a routerLink="/hobbies" class="nav-link">Hobbies</a>
+        <a routerLink="/events" class="nav-link">Events</a>
+        <a routerLink="/groups" class="nav-link">Groups</a>
+        <a routerLink="/friends" class="nav-link">👥 Friends</a>
+        <a routerLink="/messages" class="nav-link">💬 Messages</a>
+        <a routerLink="/profile" class="nav-link">Profile</a>
+        <button class="btn-logout" (click)="logout()">Logout</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="home-main">
+    <section class="hero-section">
+      <h2>Discover Local Hobbies & Communities</h2>
+      <p>Find groups, join events, and connect with people who share your interests</p>
+    </section>
+
+    @if (isLoading) {
+      <div class="loading">Loading...</div>
+    } @else {
+      <section class="hobbies-section">
+        <div class="section-header">
+          <h3>Popular Hobbies ({{ hobbies.length }} loaded)</h3>
+          <a routerLink="/hobbies" class="view-all">View All</a>
+        </div>
+        <div class="hobbies-grid">
+          @if (hobbies.length === 0) {
+            <p style="color: red;">ERROR: No hobbies data received from API</p>
+          } @else {
+            @for (hobby of hobbies; track hobby.id) {
+              <div class="hobby-card" (click)="navigateToHobby(hobby.id!)">
+                <div class="hobby-icon">{{ hobby.name.charAt(0) }}</div>
+                <h4>{{ hobby.name }}</h4>
+                <p>{{ hobby.description || 'Join this hobby community' }}</p>
+              </div>
+            }
+          }
+        </div>
+      </section>
+
+      <section class="events-section">
+        <div class="section-header">
+          <h3>Upcoming Events ({{ upcomingEvents.length }} loaded)</h3>
+          <a routerLink="/events" class="view-all">View All</a>
+        </div>
+        <div class="events-list">
+          @if (upcomingEvents.length === 0) {
+            <p style="color: red;">ERROR: No events data received from API</p>
+          } @else {
+            @for (event of upcomingEvents; track event.id) {
+              <div class="event-card" (click)="navigateToEvent(event.id!)">
+                <div class="event-date">
+                  <span class="date-day">{{ event.date | date:'d' }}</span>
+                  <span class="date-month">{{ event.date | date:'MMM' }}</span>
+                </div>
+                <div class="event-info">
+                  <h4>{{ event.title }}</h4>
+                  <p>{{ event.description || 'Join us for this event' }}</p>
+                  @if (event.group) {
+                    <span class="event-group">{{ event.group.name }}</span>
+                  }
+                </div>
+              </div>
+            }
+          }
+        </div>
+      </section>
+    }
+  </main>
+</div>

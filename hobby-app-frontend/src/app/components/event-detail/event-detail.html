@@ -1,0 +1,51 @@
+<div class="event-detail-container">
+  <header class="page-header">
+    <div class="header-content">
+      <a routerLink="/events" class="back-link">← Back to Events</a>
+    </div>
+  </header>
+
+  <main class="page-main">
+    @if (isLoading) {
+      <div class="loading">Loading...</div>
+    } @else if (accessDenied) {
+      <div class="access-denied">
+        <h2>Access Denied</h2>
+        <p>You must be a member of the group {{ event?.group?.name }} to view this event details.</p>
+        <button class="btn btn-primary" (click)="navigateToGroup(event?.group?.id!)">
+          Go to Group
+        </button>
+      </div>
+    } @else if (event) {
+      <div class="event-detail">
+        <div class="event-header">
+          <div class="event-date-large">
+            <span class="date-day">{{ event.date | date:'d' }}</span>
+            <span class="date-month">{{ event.date | date:'MMM' }}</span>
+            <span class="date-year">{{ event.date | date:'yyyy' }}</span>
+          </div>
+          <div class="event-content">
+            <h1>{{ event.title }}</h1>
+            @if (event.group) {
+              <div class="event-group-info">
+                <span class="group-link" (click)="navigateToGroup(event.group!.id!)">
+                  {{ event.group.name }}
+                </span>
+                @if (event.group.location) {
+                  <span class="location">📍 {{ event.group.location }}</span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="event-description">
+          <h2>About this event</h2>
+          <p>{{ event.description || 'Join us for this exciting event!' }}</p>
+        </div>
+      </div>
+    } @else {
+      <div class="error">Event not found</div>
+    }
+  </main>
+</div>

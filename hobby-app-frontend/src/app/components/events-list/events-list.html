@@ -1,0 +1,42 @@
+<div class="events-list-container">
+  <header class="page-header">
+    <div class="header-content">
+      <h1>All Events</h1>
+      <a routerLink="/home" class="back-link">← Back to Home</a>
+    </div>
+  </header>
+
+  <main class="page-main">
+    @if (isLoading) {
+      <div class="loading">Loading events...</div>
+    } @else {
+      @if (events.length > 0) {
+        <div class="events-list">
+          @for (event of events; track event.id) {
+            <div class="event-card" (click)="navigateToEvent(event.id!)">
+              <div class="event-date">
+                <span class="date-day">{{ event.date | date:'d' }}</span>
+                <span class="date-month">{{ event.date | date:'MMM' }}</span>
+                <span class="date-year">{{ event.date | date:'yyyy' }}</span>
+              </div>
+              <div class="event-info">
+                <h3>{{ event.title }}</h3>
+                <p>{{ event.description || 'Join us for this event' }}</p>
+                @if (event.group) {
+                  <div class="event-meta">
+                    <span class="group-name">{{ event.group.name }}</span>
+                    @if (event.group.location) {
+                      <span class="location">📍 {{ event.group.location }}</span>
+                    }
+                  </div>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="no-events">No events available yet.</p>
+      }
+    }
+  </main>
+</div>

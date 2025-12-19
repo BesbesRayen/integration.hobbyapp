@@ -1,0 +1,85 @@
+<div class="chat-container">
+  <header class="chat-header">
+    <div class="header-content">
+      <button (click)="goBack()" class="back-link">← Back</button>
+      <h2>{{ group?.name || 'Chat' }}</h2>
+      <button (click)="toggleMembers()" class="members-toggle" title="Show members">
+        👥
+      </button>
+    </div>
+  </header>
+
+  <div class="chat-wrapper">
+    <main class="chat-main">
+      @if (isLoading) {
+        <div class="loading">Loading chat...</div>
+      } @else if (accessDenied) {
+        <div class="access-denied">
+          <h2>Access Denied</h2>
+          <p>You must be a member of this group to access the chat.</p>
+          <a routerLink="/groups/{{ group?.id }}" class="btn btn-primary">Back to Group</a>
+        </div>
+      } @else {
+        <div class="chat-messages">
+          @if (chats.length === 0) {
+            <div class="no-messages">No messages yet. Start the conversation!</div>
+          }
+          @for (chat of chats; track chat.id) {
+            <div class="message-group" [ngClass]="{ 'sent': chat.user?.id === currentUser?.id, 'received': chat.user?.id !== currentUser?.id }">
+              <div class="message" [class.own-message]="chat.user?.id === currentUser?.id">
+                @if (chat.user?.id !== currentUser?.id) {
+                  <div class="message-header">
+                    <span class="sender-name">{{ chat.user?.name || 'Anonymous' }}</span>
+                  </div>
+                }
+                <div class="message-content">
+                  <p class="message-text">{{ chat.message }}</p>
+                </div>
+                <div class="message-header">
+                  <span class="message-time">{{ chat.timestamp | date:'short' }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div class="chat-input">
+          <form [formGroup]="messageForm" (ngSubmit)="sendMessage()">
+            <input
+              type="text"
+              formControlName="message"
+              placeholder="Aa"
+              class="message-input"
+            />
+            <button type="submit" class="send-button" [disabled]="!messageForm.value.message?.trim()">
+              ➤
+            </button>
+          </form>
+        </div>
+      }
+    </main>
+
+    <!-- Members Sidebar -->
+    @if (!accessDenied && !isLoading) {
+      <aside class="members-sidebar" [class.active]="showMembers">
+        <div class="sidebar-header">
+          <h3>Membres ({{ group?.users?.length || 0 }})</h3>
+          <button (click)="toggleMembers()" class="close-members">✕</button>
+        </div>
+        <div class="members-list">
+          @for (member of group?.users; track member.id) {
+            <div class="member-item" [class.current-user]="member.id === currentUser?.id">
+              <div class="member-avatar">{{ (member.name || 'A').charAt(0).toUpperCase() }}</div>
+              <div class="member-info">
+                <p class="member-name">{{ member.name }}</p>
+                @if (member.id === currentUser?.id) {
+                  <span class="member-badge">You</span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </aside>
+    }
+  </div>
+</div>

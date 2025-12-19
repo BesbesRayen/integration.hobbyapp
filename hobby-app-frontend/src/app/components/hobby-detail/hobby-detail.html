@@ -1,0 +1,61 @@
+<div class="hobby-detail-container">
+  <header class="page-header">
+    <div class="header-content">
+      <a routerLink="/hobbies" class="back-link">← Back to Hobbies</a>
+    </div>
+  </header>
+
+  <main class="page-main">
+    @if (isLoading) {
+      <div class="loading">Loading...</div>
+    } @else if (hobby) {
+      <div class="hobby-header">
+        <div class="hobby-icon-large">{{ hobby.name.charAt(0) }}</div>
+        <h1>{{ hobby.name }}</h1>
+        <p class="hobby-description">{{ hobby.description || 'Join groups and connect with people who share this interest' }}</p>
+      </div>
+
+      <section class="groups-section">
+        <h2>Groups</h2>
+        @if (groups.length > 0) {
+          <div class="groups-grid">
+            @for (group of groups; track group.id) {
+              <div class="group-card">
+                <div class="group-info" (click)="navigateToGroup(group.id!)">
+                  <h3>{{ group.name }}</h3>
+                  <p>{{ group.description || 'Join this group to connect with others' }}</p>
+                  @if (group.location) {
+                    <span class="location">📍 {{ group.location }}</span>
+                  }
+                  @if (group.users && group.users.length > 0) {
+                    <span class="members-count">{{ group.users.length }} members</span>
+                  }
+                </div>
+                @if (isMember(group.id)) {
+                  <button class="btn btn-join-success" (click)="navigateToGroup(group.id!)">
+                    Joined ✓
+                  </button>
+                } @else {
+                  <button class="btn btn-join" (click)="joinGroup($event, group.id!)" [disabled]="joiningGroupId === group.id">
+                    {{ joiningGroupId === group.id ? 'Joining...' : 'Join Group' }}
+                  </button>
+                }
+              </div>
+            }
+          </div>
+        } @else {
+          <p class="no-groups">No groups available for this hobby yet.</p>
+        }
+      </section>
+    } @else {
+      <div class="error">Hobby not found</div>
+    }
+  </main>
+
+  @if (errorMessage) {
+    <div class="alert alert-error">{{ errorMessage }}</div>
+  }
+  @if (successMessage) {
+    <div class="alert alert-success">{{ successMessage }}</div>
+  }
+</div>
